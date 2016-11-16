@@ -15,28 +15,10 @@
 # factors. 
 
 ###############################################
-# Load Packages
-library(RSkittleBrewer)
-co = RSkittleBrewer("tropical")
-
-###############################################
 # Set Parameters
 
 # number of subjects (<10000)
 N = 300
-
-###############################################
-# Functions
-
-# plot curves
-plot.curves = function(mat, title="Individual-Specific Curves"){
-      t = 1:1440
-      plot(mat[,1]~t, type="l", col="black", ylim=c(0,40),
-           main = title)
-      for(i in 1:ncol(mat)){
-            lines(mat[,i]~t, type="l", col=co[i%%5+1])
-      }
-}
 
 ###############################################
 # Population Generating Curves 
