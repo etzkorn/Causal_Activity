@@ -28,15 +28,12 @@
                   nbasis = 24, #24 basis functions
                   norder = 4) #cubic splines
       plot(fit3)
-      lines(average.effect ~ t)
-      
-      t = 1:1440
-      f = Y[100,]
-      plot(f~t)
-      ggplot() + geom_point(aes(x=t, y=f)) + stat_smooth(aes(x=t,y=f))
-      
-################################################################
-# Function on Scalar Regression 2-Step (fosr2s)
-
-################################################################
-# Penalized Flexible Functional Regression (pffr)
+      lines(average.effect ~ t, col="red")
+      fit4 = fosr(Y = Y, X = X, 
+                  argvals = 1:1440,
+                  method = "OLS", 
+                  lambda = 4, 
+                  nbasis = 12, #24 basis functions
+                  norder = 4) #cubic splines
+      plot(fit4)
+      lines(average.effect ~ t, col="red")

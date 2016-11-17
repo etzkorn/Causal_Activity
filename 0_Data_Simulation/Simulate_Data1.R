@@ -18,7 +18,7 @@
 # Set Parameters
 
 # number of subjects (<10000)
-N = 300
+N = 30
 
 ###############################################
 # Population Generating Curves 
@@ -81,7 +81,8 @@ steps.a0 = generate.steps(individual.a0)
 # Get correct answers from entire population
 individual.effects = individual.a1-individual.a0
 average.effect = rowMeans(individual.effects)
-      # plot(average.effects, type="l")
+      # plot(average.effect, type="l")
+      # plot.curves(individual.effects)
 
 ###############################################
 # Save Data
