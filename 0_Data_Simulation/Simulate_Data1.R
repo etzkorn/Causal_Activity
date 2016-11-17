@@ -17,7 +17,9 @@
 ###############################################
 # Set Parameters
 
-# number of subjects (<10000)
+# population size
+popN = 10000
+# sample size
 N = 30
 
 ###############################################
@@ -32,10 +34,7 @@ population.a1 = 7 * (sin(t*pi/1440)^9) * (sin(t*pi/1440*8)+1) + 3*sin(t*pi/1440)
 # population under A = 0
 population.a0 = 3 * (sin(t*pi/1440)^10) * (sin(t*pi/1440*10+150)+1) + 5*sin(t*pi/1440)^5 + 0.1
       # lines(population.a0~t, type="l", col="red")
-
-legend(x=0, y=20, box.lwd = 0,
-       fill = c("red","blue"), 
-       legend = c("A = 0", "A = 1"))
+      # legend(x=0, y=20, box.lwd = 0, fill = c("red","blue"), legend = c("A = 0", "A = 1"))
 
 # population proportion between curves
 pop.prop = population.a1 / (population.a0 +  population.a1)
@@ -56,7 +55,7 @@ generate.curve = function(population.a1){
 }
 
 # expected steps under amputation
-individual.a1 = replicate(10000, generate.curve(population.a1))
+individual.a1 = replicate(popN, generate.curve(population.a1))
 
 # expected steps under salvage (everone has the same treatment proportion)
 individual.a0 = individual.a1 / pop.prop - individual.a1
@@ -81,16 +80,20 @@ steps.a0 = generate.steps(individual.a0)
 # Get correct answers from entire population
 individual.effects = individual.a1-individual.a0
 average.effect = rowMeans(individual.effects)
+average.a1 = rowMeans(individual.a1)
+average.a0 = rowMeans(individual.a0)
+      # par(mfrow=c(1,3))
       # plot(average.effect, type="l")
-      # plot.curves(individual.effects)
+      # plot(average.a1, type="l")
+      # plot(average.a0, type="l")
 
 ###############################################
 # Save Data
-random.samp = sample(1:10000, N)
-a = sample(0:1, N, replace=T)==1
+random.samp = sample(1:popN, N)
+A = sample(0:1, N, replace=T)==1
 
-A1 = t(steps.a1[,random.samp][,a])
-A0 = t(steps.a0[,random.samp][,!a])
+Y = rbind(t(steps.a1[,random.samp][,a]), 
+          t(steps.a0[,random.samp][,!a]))
 
-rm(list = setdiff(ls(), c("A1", "A0", "average.effect")))
+rm(list = setdiff(ls(), c("A", "Y", "average.effect", "average.a1", "average.a0")))
 save.image(file="0_Data_Simulation/Simulation1.Rdata")
