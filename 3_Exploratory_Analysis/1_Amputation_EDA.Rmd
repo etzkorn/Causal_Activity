@@ -1,0 +1,80 @@
+---
+title: "Amputation Prediction EDA"
+author: "Lacey Etzkorn"
+date: "December 15, 2016"
+output: 
+      html_document:
+            toc: TRUE
+---
+
+```{r setup}
+require(dplyr)
+require(reshape2)
+require(ggplot2)
+setwd("..")
+demo = 
+      read.csv(file = "1_Data/steps_2015.08.26.csv") %>%
+      select(id, amp = amputationDefinition1,
+             facility:age, 
+             race = raceEthnicity, occ = primaryOccupation, weight:bmi,
+             emp = interviewCurrentlyEmployed,
+             work = interviewCurrentlyWorking, bear = followupWeightBearing, 
+             walk = followupAmbulatoryStatus)
+```
+
+## Amputation Status
+
+```{r}
+table(demo$amp, useNA = "ifany")
+```
+
+## Covariate Plots
+
+```{r, fig.height=10, fig.width=8}
+factor.table = 
+      demo %>%
+      select(-age, -height, -bmi, -weight) %>%
+      melt(id.vars = c("id", "amp"))%>%
+      group_by(variable, value, amp) %>%
+      summarise(total = n()) %>%
+      select(variable, val = value, amp, total) %>%
+      ungroup()%>%
+      mutate(val = sub(" ", "\n", val))
+#      dcast(variable + val ~ amp, fill = 0) %>%
+#      group_by(variable) %>%
+#      mutate(Total = No + Yes,
+#             Amputated = sum(No),
+#             Salvaged = sum(Yes),
+#             prop.amp = No/Amputated, 
+#             prop.sal = Yes/Salvaged) 
+ggplot(factor.table) +
+      geom_bar(aes(x = val, fill = amp, y = total), stat="identity") +
+      facet_wrap("variable", scales="free") + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+      scale_color_discrete(guide=F)
+ggplot(factor.table) +
+      geom_bar(aes(x = val, fill = amp, y = total), stat="identity", position="fill") +
+      facet_wrap("variable", scales="free") + 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+      scale_color_discrete(guide=F)
+
+demo.long =
+      demo %>%
+      select(id, amp, age, height, bmi, weight) %>%
+      melt(id.vars = c("id", "amp"))
+ggplot(demo.long, aes(x=amp, y=value, color = amp)) +
+      geom_boxplot() +
+      geom_jitter() +
+      facet_wrap("variable", scales="free")
+```
+
+## Covariate Models
+```{r, fig.height=10, fig.width=8}
+mod1 = glm(data = demo, 
+           family = "binomial",
+           amp ~ age + weight + height + bmi + 
+                 gender + race + occ + emp + work + bear + walk)
+summary(mod1)
+step1 = step(mod1,direction = c("both"))
+summary(step1)
+```

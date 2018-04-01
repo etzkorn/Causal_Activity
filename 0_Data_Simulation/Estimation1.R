@@ -11,10 +11,6 @@
 
 # model matrix of predictors
       X = cbind(1,A)
-# subsample
-      i = sample(1:nrow(Y), 30)
-      Y = Y[i,]
-      X = X[i,]
 # t
       t = 1:1440
       
@@ -23,7 +19,7 @@
       fit3 = fosr(Y = Y, X = X, 
                   argvals = t,
                   method = "OLS", 
-                  lambda = 3,  # smoothing parameter
+                  lambda = 0,  # smoothing parameter
                   nbasis = 24, # 24 basis functions
                   norder = 4,  # cubic splines
                   cov.method = "naive")
@@ -31,15 +27,24 @@
             beta0 = fit3$est.func[,"reps 1"]
             beta1 = fit3$est.func[,"reps 2"]
             
+            par(mfrow=c(1,2))
             plot(average.a0~t, type="l")
             lines(beta0~t, type="l", col="red")          
-            legend(x=0, y=30, box.lwd = 0, fill = c("red","black"), legend = c("Fitted B0", "True B0"))
+            legend(x=0, y=30, box.lwd = 0, fill = c("red","black"),
+                   legend = c("Fitted B0", "True B0"))
             
             plot(average.effect~t, type="l")
             lines(beta1~t, type="l", col="blue")
-            legend(x=700, y=-15, box.lwd = 0, fill = c("blue","black"), legend = c("Fitted Effect", "True Effect"))
+            legend(x=700, y=-15, box.lwd = 0, fill = c("blue","black"), 
+                   legend = c("Fitted Effect", "True Effect"))
       
-      
+################################################################
+# Try subsampling the response curves to improve computation time
+condense.times = function(y, n = 2){
+      grp = rep(1:(ncol(Y)%/%n), each = 2)
+      x = 
+}
+A = A
       lines(average.effect ~ t, col="red")
       fit4 = fosr(Y = Y, X = X, 
                   argvals = 1:1440,

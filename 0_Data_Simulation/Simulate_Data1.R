@@ -90,10 +90,12 @@ average.a0 = rowMeans(individual.a0)
 ###############################################
 # Save Data
 random.samp = sample(1:popN, N)
-A = sample(0:1, N, replace=T)==1
+a = sample(0:1, N, replace=T)==1
 
 Y = rbind(t(steps.a1[,random.samp][,a]), 
           t(steps.a0[,random.samp][,!a]))
+
+A = c(rep(1, sum(a)), rep(0, N-sum(a)))
 
 rm(list = setdiff(ls(), c("A", "Y", "average.effect", "average.a1", "average.a0")))
 save.image(file="0_Data_Simulation/Simulation1.Rdata")
